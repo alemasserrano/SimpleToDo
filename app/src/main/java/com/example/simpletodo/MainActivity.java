@@ -1,24 +1,24 @@
 package com.example.simpletodo;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
-import android.os.FileUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,10 +41,7 @@ public class MainActivity extends AppCompatActivity {
         rvItems = findViewById(R.id.rvItems);
 
         //Instantiate the model
-        items = new ArrayList<>();
-        items.add("Buy running shoes");
-        items.add("Go to the gym");
-        items.add("Go to the beach");
+        loadItems();
 
         ItemsAdapter.OnLongClickListener onLongClickListener = new ItemsAdapter.OnLongClickListener(){
             @Override
@@ -54,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 //Notify the adapter at which position we deleted the item
                 itemsAdapter.notifyItemRemoved(position);
                 Toast.makeText(getApplicationContext(), "Item was removed", Toast.LENGTH_SHORT).show();
+                saveItems();
 
             }
         };
@@ -78,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 etItem.setText("");
                 //Give user feedback that they added the item successfully, shows up briefly
                 Toast.makeText(getApplicationContext(), "Item was added", Toast.LENGTH_SHORT).show();
+                saveItems();
             }
         });
     }
@@ -98,6 +97,10 @@ public class MainActivity extends AppCompatActivity {
 
     //This function saves items by writing them into the data file
     private void saveItems(){
-
+        try {
+            FileUtils.writeLines(getDataFile(), items);
+        } catch (IOException e){
+            Log.e("MainActivity", "Error writing items", e);
+        }
     }
 }
